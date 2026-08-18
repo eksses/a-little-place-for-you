@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>A Little Place For You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Cinzel:wght@400;600&family=Hind+Siliguri:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================
+       DESIGN SYSTEM & CSS VARIABLES
+       ========================================== */
+    :root {
+      --bg-midnight: #050716;
+      --bg-violet: #141738;
+      --dusty-rose: #f0b6c8;
+      --soft-lavender: #c2b8e3;
+      --warm-cream: #fffdfa;
+      --moon-gold: #fef08a;
+      --accent-glow: rgba(254, 240, 138, 0.35);
+      --glass-bg: rgba(20, 24, 58, 0.72);
+      --glass-border: rgba(240, 182, 200, 0.22);
+      
+      --font-heading: 'Cinzel', serif;
+      --font-handwriting: 'Caveat', cursive;
+      --font-body: 'Plus Jakarta Sans', 'Hind Siliguri', -apple-system, sans-serif;
+      --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #02030a;
+      font-family: var(--font-body);
+      color: var(--warm-cream);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Ambient Aurora Waves Background */
+    .aurora-layer {
+      position: absolute;
+      top: -30%;
+      left: -30%;
+      width: 160%;
+      height: 160%;
+      background: radial-gradient(circle at 20% 30%, rgba(240, 182, 200, 0.12) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(194, 184, 227, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 80%, rgba(254, 240, 138, 0.08) 0%, transparent 60%);
+      filter: blur(40px);
+      animation: auroraMove 18s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    @keyframes auroraMove {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(10deg) scale(1.1); }
+      100% { transform: rotate(-5deg) scale(1.05); }
+    }
+
+    /* ==========================================
+       MOBILE CONTAINER & RESPONSIVE LAYOUT
+       ========================================== */
+    .app-frame {
+      width: 100%;
+      max-width: 540px;
+      height: 100vh;
+      height: 100svh;
+      min-height: 100svh;
+      position: relative;
+      background: radial-gradient(circle at 50% 30%, #171b3e 0%, var(--bg-midnight) 80%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Canvas Background layer */
+    #nightCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: auto;
+    }
+
+    /* Header Controls */
+    .top-bar {
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .brand-title {
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--soft-lavender);
+      opacity: 0.7;
+      font-weight: 300;
+    }
+
+    .icon-btn {
+      pointer-events: auto;
+      min-width: 44px;
+      min-height: 44px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(10, 12, 28, 0.5);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--warm-cream);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s var(--ease-out-back), background 0.2s ease;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: rgba(26, 30, 71, 0.8);
+    }
+
+    .lang-btn {
+      pointer-events: auto;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(10, 12, 28, 0.55);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--warm-cream);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s var(--ease-out-back), background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .lang-btn:active {
+      transform: scale(0.92);
+      border-color: var(--dusty-rose);
+    }
+
+    /* ==========================================
+       SCENE MANAGEMENT
+       ========================================== */
+    .scene-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.8s var(--ease-smooth), visibility 0.8s var(--ease-smooth);
+      pointer-events: none;
+    }
+
+    .scene-layer.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* Common Text & Typography */
+    .heading-large {
+      font-family: var(--font-heading);
+      font-size: 1.55rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--warm-cream);
+      margin-bottom: 14px;
+      line-height: 1.4;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .body-soft {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--soft-lavender);
+      line-height: 1.6;
+      margin-bottom: 24px;
+      max-width: 320px;
+    }
+
+    .highlight-text {
+      color: var(--dusty-rose);
+      font-style: italic;
+    }
+
+    /* Buttons & Interactive Elements */
+    .primary-btn {
+      min-height: 48px;
+      padding: 12px 28px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(226, 168, 190, 0.25) 0%, rgba(179, 167, 217, 0.2) 100%);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--warm-cream);
+      font-size: 0.95rem;
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: transform 0.25s var(--ease-out-back), background 0.3s ease, box-shadow 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .primary-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .secondary-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .choice-btn {
+      min-height: 48px;
+      padding: 14px 20px;
+      border-radius: 16px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--warm-cream);
+      font-size: 0.95rem;
+      font-weight: 300;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: transform 0.2s var(--ease-out-back), border-color 0.2s ease, background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .choice-btn:active {
+      transform: scale(0.96);
+      background: rgba(40, 46, 95, 0.8);
+      border-color: var(--dusty-rose);
+    }
+
+    /* ==========================================
+       SCENE SPECIFIC STYLES
+       ========================================== */
+
+    /* 1. Loading Screen */
+    .loader-glow {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .loader-pulse {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--dusty-rose) 0%, transparent 70%);
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(0.8); opacity: 0.4; }
+      50% { transform: scale(1.2); opacity: 0.9; }
+    }
+
+    /* 2. Intro Screen Line Fades */
+    .fade-line {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+    .fade-line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 5. Breathing Flower SVG Interaction */
+    .flower-container {
+      width: 220px;
+      height: 220px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .flower-svg {
+      width: 100%;
+      height: 100%;
+      transform-origin: center;
+      transition: transform 0.1s linear;
+      filter: drop-shadow(0 0 15px rgba(226, 168, 190, 0.3));
+    }
+
+    .progress-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      pointer-events: none;
+    }
+
+    .progress-ring-circle {
+      stroke: var(--moon-gold);
+      stroke-dasharray: 628; /* 2 * pi * 100 */
+      stroke-dashoffset: 628;
+      transition: stroke-dashoffset 0.1s linear;
+    }
+
+    .breath-instruction {
+      font-size: 1.1rem;
+      color: var(--moon-gold);
+      font-weight: 300;
+      height: 28px;
+      margin-top: 10px;
+      transition: opacity 0.5s ease;
+    }
+
+    /* 6. Envelope & Letter Modal */
+    .envelope-wrapper {
+      width: 130px;
+      height: 95px;
+      margin: 24px 0;
+      cursor: pointer;
+      animation: floatBob 4s ease-in-out infinite;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+      transition: transform 0.3s var(--ease-out-back);
+    }
+
+    .envelope-wrapper:active {
+      transform: scale(0.92);
+    }
+
+    @keyframes floatBob {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(1.5deg); }
+    }
+
+    .letter-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(4, 6, 16, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .letter-modal.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .letter-card {
+      width: 100%;
+      max-width: 380px;
+      background: linear-gradient(145deg, rgba(27, 30, 66, 0.95) 0%, rgba(15, 18, 42, 0.98) 100%);
+      border: 1px solid rgba(254, 240, 138, 0.25);
+      border-radius: 28px;
+      padding: 36px 28px 28px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .companion-svg-container {
+      width: 150px;
+      height: 150px;
+      cursor: pointer;
+      transition: transform 0.3s var(--ease-out-back);
+      animation: gentleBreathing 4s ease-in-out infinite;
+    }
+
+    @keyframes gentleBreathing {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.04) translateY(-3px); }
+    }
+
+    .letter-title {
+      font-size: 1.4rem;
+      color: var(--moon-gold);
+      margin-bottom: 16px;
+      font-weight: 600;
+      font-family: var(--font-heading);
+      letter-spacing: 0.05em;
+    }
+
+    .letter-body {
+      font-size: 1.35rem;
+      line-height: 1.6;
+      color: var(--warm-cream);
+      font-weight: 500;
+      font-family: var(--font-handwriting);
+      white-space: pre-wrap;
+    }
+
+    .letter-close {
+      margin-top: 24px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* 7. Fluffy Companion SVG & Dialog */
+    .companion-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .companion-svg-container {
+      width: 140px;
+      height: 140px;
+      cursor: pointer;
+      transition: transform 0.2s var(--ease-out-back);
+    }
+
+    .companion-svg-container:active {
+      transform: scale(0.9);
+    }
+
+    .dialogue-bubble {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 16px 20px;
+      max-width: 300px;
+      font-size: 0.95rem;
+      color: var(--warm-cream);
+      line-height: 1.5;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .dialogue-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid var(--glass-bg);
+    }
+
+    /* 8A. Comfort Bedroom Rain Scene */
+    .rain-window-box {
+      width: 260px;
+      height: 220px;
+      border-radius: 24px;
+      border: 2px solid var(--glass-border);
+      background: linear-gradient(180deg, rgba(15, 18, 42, 0.8) 0%, rgba(8, 10, 24, 0.9) 100%);
+      position: relative;
+      overflow: hidden;
+      margin: 16px 0;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    #rainCanvas {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .bedroom-lamp {
+      position: absolute;
+      bottom: 12px;
+      right: 16px;
+      width: 50px;
+      height: 70px;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    .lamp-glow-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 80% 70%, rgba(253, 230, 138, 0.25) 0%, transparent 60%);
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    .lamp-glow-overlay.off {
+      opacity: 0;
+    }
+
+    /* 8B. Distraction Firefly Counter */
+    .game-score-badge {
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(253, 230, 138, 0.15);
+      border: 1px solid var(--moon-gold);
+      color: var(--moon-gold);
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    /* 8C. Warmth Petals Grid */
+    .petals-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      max-width: 320px;
+      margin: 20px 0;
+    }
+
+    .petal-card {
+      width: 65px;
+      height: 65px;
+      border-radius: 50% 0 50% 50%;
+      transform: rotate(45deg);
+      background: linear-gradient(135deg, rgba(226, 168, 190, 0.4) 0%, rgba(179, 167, 217, 0.2) 100%);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.3s var(--ease-out-back), background 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .petal-card span {
+      transform: rotate(-45deg);
+      font-size: 1.2rem;
+    }
+
+    .petal-card:active, .petal-card.opened {
+      transform: rotate(45deg) scale(0.85);
+      background: linear-gradient(135deg, var(--dusty-rose) 0%, var(--soft-lavender) 100%);
+    }
+
+    .petal-note-display {
+      min-height: 80px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px;
+      width: 100%;
+      max-width: 300px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--warm-cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+
+    /* Zen Mode Floating Exit Button */
+    .zen-exit-pill {
+      position: absolute;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 20px;
+      border-radius: 999px;
+      background: rgba(10, 12, 28, 0.7);
+      border: 1px solid var(--glass-border);
+      color: var(--soft-lavender);
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    .zen-exit-pill.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Accessibility reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, .fade-line, .scene-layer, .envelope-wrapper, .flower-svg {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-frame" id="appFrame">
+    <!-- Starry & Firefly Canvas Background -->
+    <canvas id="nightCanvas"></canvas>
+    <div class="aurora-layer"></div>
+
+    <!-- Top Navigation Controls -->
+    <header class="top-bar">
+      <span class="brand-title">A Little Place For You</span>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="lang-btn" id="langToggle" aria-label="Toggle language">EN | বাংলা</button>
+        <button class="icon-btn" id="soundToggle" aria-label="Toggle sound">
+          <!-- Sound Active Icon by default -->
+          <svg id="soundIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- SCENE 1: LOADING -->
+    <section class="scene-layer active" id="sceneLoading">
+      <div class="loader-glow">
+        <div class="loader-pulse"></div>
+      </div>
+      <p class="body-soft" style="color: var(--dusty-rose);">making a little place for you...</p>
+    </section>
+
+    <!-- SCENE 2: INTRO -->
+    <section class="scene-layer" id="sceneIntro">
+      <h1 class="heading-large fade-line" id="introLine1">Hey…</h1>
+      <p class="body-soft fade-line" id="introLine2">Come here for a minute.</p>
+      <button class="primary-btn fade-line" id="introBtn" style="margin-top: 16px;">
+        enter quietly ♡
+      </button>
+    </section>
+
+    <!-- SCENE 3: PRE-CHECK -->
+    <section class="scene-layer" id="scenePrecheck">
+      <h2 class="heading-large">How are you feeling right now?</h2>
+      <p class="body-soft">Be completely honest. There are no wrong answers here.</p>
+      
+      <div class="secondary-btn-group" id="precheckChoices">
+        <button class="choice-btn" id="btnMad">
+          <span>🌧️</span> I’m still mad.
+        </button>
+        <button class="choice-btn" id="btnLessMad">
+          <span>⛅</span> Maybe a little less mad.
+        </button>
+      </div>
+
+      <div id="precheckResponse" style="display: none; flex-direction: column; align-items: center; margin-top: 16px;">
+        <div class="dialogue-bubble" id="precheckText" style="margin-bottom: 20px;"></div>
+        <button class="primary-btn" id="btnEnterGarden">
+          step inside 🌙
+        </button>
+      </div>
+    </section>
+
+    <!-- SCENE 4: NIGHT GARDEN -->
+    <section class="scene-layer" id="sceneGarden">
+      <div id="gardenSeqContainer">
+        <p class="heading-large fade-line" id="gardenLine1">No need to reply.</p>
+        <p class="body-soft fade-line" id="gardenLine2">No need to explain anything either.</p>
+        <p class="body-soft fade-line" id="gardenLine3" style="color: var(--warm-cream);">Just stay here for a little while.</p>
+      </div>
+      
+      <button class="primary-btn fade-line" id="btnGoToFlower" style="margin-top: 24px;">
+        touch the quiet flower 🌸
+      </button>
+    </section>
+
+    <!-- SCENE 5: BREATHING FLOWER -->
+    <section class="scene-layer" id="sceneFlower">
+      <p class="body-soft" style="margin-bottom: 8px;">Hold the flower to take a gentle breath together.</p>
+      
+      <div class="flower-container" id="flowerInteractive">
+        <svg class="progress-ring" viewBox="0 0 220 220">
+          <circle class="progress-ring-circle" id="breathRing" cx="110" cy="110" r="95" stroke-width="4" fill="transparent" />
+        </svg>
+
+        <!-- Inline SVG Blooming Flower -->
+        <svg class="flower-svg" id="svgFlower" viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="petalGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fff7ed" />
+              <stop offset="60%" stop-color="#e2a8be" />
+              <stop offset="100%" stop-color="#b3a7d9" />
+            </radialGradient>
+            <radialGradient id="centerGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fde68a" />
+              <stop offset="100%" stop-color="#e2a8be" />
+            </radialGradient>
+          </defs>
+          <!-- Stem & Leaves -->
+          <path d="M50,65 Q48,85 50,95" stroke="#7c9a82" stroke-width="2.5" fill="none" />
+          <path d="M50,80 Q40,75 35,78 Q42,84 50,80" fill="#7c9a82" />
+          <path d="M50,83 Q60,78 65,81 Q58,87 50,83" fill="#7c9a82" />
+
+          <!-- Petals (Layer 1 Outer) -->
+          <g id="flowerPetals" transform-origin="50 50">
+            <circle cx="50" cy="30" r="14" fill="url(#petalGrad)" opacity="0.9" />
+            <circle cx="70" cy="50" r="14" fill="url(#petalGrad)" opacity="0.9" />
+            <circle cx="50" cy="70" r="14" fill="url(#petalGrad)" opacity="0.9" />
+            <circle cx="30" cy="50" r="14" fill="url(#petalGrad)" opacity="0.9" />
+            <circle cx="64" cy="36" r="14" fill="url(#petalGrad)" opacity="0.85" />
+            <circle cx="64" cy="64" r="14" fill="url(#petalGrad)" opacity="0.85" />
+            <circle cx="36" cy="64" r="14" fill="url(#petalGrad)" opacity="0.85" />
+            <circle cx="36" cy="36" r="14" fill="url(#petalGrad)" opacity="0.85" />
+          </g>
+          <!-- Center Stamen -->
+          <circle cx="50" cy="50" r="10" fill="url(#centerGrad)" />
+        </svg>
+      </div>
+
+      <div class="breath-instruction" id="breathInstruction">press & hold</div>
+      
+      <div id="flowerCompleteBox" style="display: none; flex-direction: column; align-items: center; margin-top: 12px;">
+        <p class="body-soft" style="color: var(--moon-gold);">You made something beautiful without doing anything at all.</p>
+        <button class="primary-btn" id="btnShowLetter">
+          a note for you ✉️
+        </button>
+      </div>
+    </section>
+
+    <!-- SCENE 6: ENVELOPE & LETTER MODAL -->
+    <section class="scene-layer" id="sceneLetter">
+      <h2 class="heading-large">Something left here for you</h2>
+      <p class="body-soft">Tap the envelope to open your letter.</p>
+
+      <div class="envelope-wrapper" id="envelopeBtn">
+        <svg viewBox="0 0 120 90" width="100%" height="100%">
+          <rect x="5" y="15" width="110" height="70" rx="10" fill="#1a1e47" stroke="#e2a8be" stroke-width="1.5" />
+          <path d="M5,15 L60,50 L115,15" fill="none" stroke="#e2a8be" stroke-width="1.5" />
+          <polygon points="60,40 52,52 68,52" fill="#fde68a" />
+        </svg>
+      </div>
+    </section>
+
+    <!-- LETTER MODAL POPUP -->
+    <div class="letter-modal" id="letterModal">
+      <div class="letter-card">
+        <h3 class="letter-title" id="letterTitleText">For You, Quietly</h3>
+        <div class="letter-body" id="letterBodyText"></div>
+        <button class="primary-btn letter-close" id="btnCloseLetter">
+          close note ♡
+        </button>
+      </div>
+    </div>
+
+    <!-- SCENE 7: FLUFFY COMPANION -->
+    <section class="scene-layer" id="sceneCompanion">
+      <div class="companion-box">
+        <div class="dialogue-bubble" id="companionBubble">
+          Hi. I brought a tiny flower for you. You don't have to talk if you don't want to.
+        </div>
+
+        <div class="companion-svg-container" id="companionSvgBtn">
+          <!-- Inline SVG Cloud Bear Companion -->
+          <svg viewBox="0 0 140 140" width="100%" height="100%">
+            <defs>
+              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.4"/>
+              </filter>
+              <radialGradient id="lanternGlowGrad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fef08a" stop-opacity="0.9"/>
+                <stop offset="60%" stop-color="#f0b6c8" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#fef08a" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <!-- Lantern Glow Aura Behind Bear -->
+            <circle cx="102" cy="85" r="28" fill="url(#lanternGlowGrad)" />
+
+            <g filter="url(#shadow)">
+              <!-- Ears -->
+              <circle cx="44" cy="38" r="15" fill="#fffdfa" />
+              <circle cx="44" cy="38" r="9" fill="#f0b6c8" opacity="0.65" />
+              <circle cx="96" cy="38" r="15" fill="#fffdfa" />
+              <circle cx="96" cy="38" r="9" fill="#f0b6c8" opacity="0.65" />
+              <!-- Cloud Head Body -->
+              <path d="M35,65 Q22,75 33,92 Q28,108 45,112 Q70,122 95,112 Q112,108 107,92 Q118,75 105,65 Q112,48 90,43 Q70,33 50,43 Q28,48 35,65 Z" fill="#fffdfa" />
+              <!-- Eyes (Peaceful curved arcs) -->
+              <path d="M48,68 Q54,74 60,68" stroke="#141738" stroke-width="2.5" fill="none" stroke-linecap="round" />
+              <path d="M80,68 Q86,74 92,68" stroke="#141738" stroke-width="2.5" fill="none" stroke-linecap="round" />
+              <!-- Cheeks -->
+              <circle cx="44" cy="75" r="6.5" fill="#f0b6c8" opacity="0.75" />
+              <circle cx="96" cy="75" r="6.5" fill="#f0b6c8" opacity="0.75" />
+              <!-- Nose -->
+              <ellipse cx="70" cy="73.5" rx="3.5" ry="2.5" fill="#141738" />
+              <path d="M70,76 L70,79" stroke="#141738" stroke-width="1.5" stroke-linecap="round" />
+
+              <!-- Tiny Glowing Lantern Held in Paw -->
+              <g transform="translate(100, 78)">
+                <!-- String -->
+                <line x1="0" y1="-8" x2="0" y2="0" stroke="#fef08a" stroke-width="1.2" />
+                <!-- Cap -->
+                <path d="M-6,0 L6,0 L4,-3 L-4,-3 Z" fill="#c2b8e3" />
+                <!-- Glass Body -->
+                <rect x="-5" y="0" width="10" height="13" rx="2" fill="rgba(254, 240, 138, 0.85)" stroke="#fef08a" stroke-width="1" />
+                <!-- Candle Flame -->
+                <circle cx="0" cy="6.5" r="2.5" fill="#ffffff" />
+                <!-- Base -->
+                <path d="M-5,13 L5,13 L4,15 L-4,15 Z" fill="#c2b8e3" />
+              </g>
+
+              <!-- Floating Little Stars -->
+              <polygon points="25,35 27,39 31,39 28,42 29,46 25,43 21,46 22,42 19,39 23,39" fill="#fef08a" opacity="0.8" />
+              <polygon points="115,30 116.5,33 119.5,33 117,35 118,38 115,36 112,38 113,35 110.5,33 113.5,33" fill="#f0b6c8" opacity="0.8" />
+            </g>
+          </svg>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--soft-lavender); opacity: 0.9; font-weight: 300;">(tap Mochi to listen)</p>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 16px;">
+        <button class="choice-btn" id="btnSendHug" style="border-color: var(--dusty-rose);">
+          <span>🫂</span> send a hug
+        </button>
+        <button class="primary-btn" id="btnGoToMoods">
+          explore cozy space 🌸
+        </button>
+      </div>
+    </section>
+
+    <!-- SCENE 8: MOOD SELECTOR -->
+    <section class="scene-layer" id="sceneMoods">
+      <h2 class="heading-large">What kind of comfort do you need right now?</h2>
+      <p class="body-soft">Choose whatever matches your heart right now.</p>
+
+      <div class="secondary-btn-group">
+        <button class="choice-btn" id="btnMoodComfort">
+          <span>🌸</span> Comfort <small style="opacity: 0.7;">(something soft)</small>
+        </button>
+        <button class="choice-btn" id="btnMoodDistraction">
+          <span>☁️</span> Distraction <small style="opacity: 0.7;">(something silly)</small>
+        </button>
+        <button class="choice-btn" id="btnMoodWarmth">
+          <span>💗</span> Warmth <small style="opacity: 0.7;">(quiet thoughts)</small>
+        </button>
+        <button class="choice-btn" id="btnMoodLanterns">
+          <span>🏮</span> Lanterns <small style="opacity: 0.7;">(release a wish)</small>
+        </button>
+      </div>
+    </section>
+
+    <!-- SUB-SCENE 8A: COMFORT (BEDROOM & RAIN WINDOW) -->
+    <section class="scene-layer" id="sceneSubComfort">
+      <h2 class="heading-large">Listen to the rain</h2>
+      <p class="body-soft">The room is safe and warm. Tap the lamp to adjust the light.</p>
+
+      <div class="rain-window-box">
+        <canvas id="rainCanvas"></canvas>
+        <div class="lamp-glow-overlay" id="lampGlow"></div>
+        
+        <div class="bedroom-lamp" id="bedroomLampBtn" aria-label="Toggle lamp">
+          <svg viewBox="0 0 50 70" width="100%" height="100%">
+            <!-- Lamp Base -->
+            <path d="M15,65 L35,65 L30,55 L20,55 Z" fill="#b3a7d9" />
+            <rect x="23" y="35" width="4" height="20" fill="#b3a7d9" />
+            <!-- Lamp Shade -->
+            <path d="M10,35 L40,35 L33,15 L17,15 Z" fill="#fde68a" />
+          </svg>
+        </div>
+      </div>
+
+      <button class="choice-btn" id="btnBackFromComfort" style="margin-top: 16px;">
+        back to choices ↩
+      </button>
+    </section>
+
+    <!-- SUB-SCENE 8B: DISTRACTION (FIREFLY GAME) -->
+    <section class="scene-layer" id="sceneSubDistraction">
+      <span class="game-score-badge" id="fireflyScoreBadge">Sparkles Caught: 0</span>
+      <h2 class="heading-large" id="fireflyMsg">Catch the fireflies</h2>
+      <p class="body-soft">Tap the glowing lights to release gentle sparkles.</p>
+
+      <button class="choice-btn" id="btnBackFromDistraction" style="margin-top: 24px;">
+        back to choices ↩
+      </button>
+    </section>
+
+    <!-- SUB-SCENE 8C: WARMTH (PETALS & QUIET THOUGHTS) -->
+    <section class="scene-layer" id="sceneSubWarmth">
+      <h2 class="heading-large">Quiet thoughts for you</h2>
+      <p class="body-soft">Tap each petal to reveal a little note.</p>
+
+      <div class="petals-grid" id="petalsContainer"></div>
+
+      <div class="petal-note-display" id="petalNoteDisplay">
+        Tap any petal above...
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="choice-btn" id="btnBackFromWarmth">
+          back ↩
+        </button>
+        <button class="primary-btn" id="btnGoToFinal">
+          final quiet spot 🌙
+        </button>
+      </div>
+    </section>
+
+    <!-- SUB-SCENE 8D: WISH LANTERNS -->
+    <section class="scene-layer" id="sceneSubLanterns">
+      <span class="game-score-badge" id="lanternScoreBadge">Wish Lanterns Floating: 0</span>
+      <h2 class="heading-large" id="lanternMsg">Release a wish lantern</h2>
+      <p class="body-soft">Tap anywhere in the sky to release a warm glowing wish into the night.</p>
+
+      <button class="choice-btn" id="btnBackFromLanterns" style="margin-top: 24px;">
+        back to choices ↩
+      </button>
+    </section>
+
+    <!-- SCENE 9: FINAL & ZEN MODE -->
+    <section class="scene-layer" id="sceneFinal">
+      <!-- Moon & Resting Companion illustration -->
+      <div style="width: 140px; height: 140px; margin-bottom: 16px; position: relative;">
+        <!-- Moon SVG -->
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+          <path d="M50,10 A35,35 0 1 0 85,45 A28,28 0 1 1 50,10 Z" fill="#fde68a" opacity="0.95" filter="drop-shadow(0 0 15px rgba(253, 230, 138, 0.4))"/>
+        </svg>
+      </div>
+
+      <h2 class="heading-large" style="max-width: 320px;">If tonight feels a little heavy…</h2>
+      <p class="body-soft" style="max-width: 320px; margin-bottom: 24px;">
+        You know where I am. No pressure. Just here. ♡
+      </p>
+
+      <div class="secondary-btn-group">
+        <button class="primary-btn" id="btnZenMode" style="justify-content: center;">
+          stay a little longer ✨
+        </button>
+        <button class="choice-btn" id="btnRestartApp" style="font-size: 0.85rem;">
+          start over 🔄
+        </button>
+      </div>
+    </section>
+
+    <!-- Zen Mode Exit Touch Overlay Button -->
+    <button class="zen-exit-pill" id="zenExitBtn">
+      tap to exit quiet mode
+    </button>
+  </div>
+
+  <!-- ==========================================
+     VANILLA JAVASCRIPT LOGIC
+     ========================================== -->
+  <script>
+    /* ==========================================
+       1. PERSONALIZATION CONFIGURATION
+       ========================================== */
+    const CONFIG = {
+      currentLang: "en",
+      en: {
+        recipientName: "My Dear",
+        senderName: "Samir",
+        letterTitle: "For You, Quietly",
+        letterBody: `Dear One,
+
+I know things might feel heavy right now, and you might be feeling upset, overwhelmed, or distant. I don't expect you to instantly fix how you feel, and you don’t have to apologize for needing room to process.
+
+I built this simple, quiet corner for you—a safe space where no one is demanding answers, asking for explanations, or rushing your heart. 
+
+Your emotions are completely valid. Take all the time and space you need. Samir is right here, holding a warm light for whenever you feel ready to step back in.
+
+Until then, rest easy here. You are cherished, always.
+
+- Samir`,
+        companionName: "Mochi",
+        companionDialogues: [
+          "Did you drink any water today? Even a tiny sip counts. 💧",
+          "I'm sitting right here with you. No expectations at all. ☁️",
+          "It's completely okay to feel whatever you are feeling right now.",
+          "If you want to stomp around, I will stomp with you. 🐾",
+          "The stars outside don't rush the night. You don't have to rush either. ⭐",
+          "Samir sent a gentle forehead kiss (if allowed). 🌸",
+          "You are allowed to have quiet, un-busy days.",
+          "Even on cloudy days, you bring so much warmth to the world.",
+          "I wrapped up a quiet hug for you in this cloud. 🧸",
+          "Whenever you're ready, Samir is right here. Take your time. ♡"
+        ],
+        warmthPetalNotes: [
+          "I love the gentle way you notice the little details in life.",
+          "Your smile is Samir's absolute favorite thing in the world.",
+          "Even when you are quiet, your presence brings total peace.",
+          "Thank you for being so deeply kind, honest, and uniquely you.",
+          "I admire how hard you try, even when things get overwhelming.",
+          "You make ordinary moments feel like warm, comforting memories.",
+          "No matter what happens, you will always have Samir's gentle support."
+        ]
+      },
+      bn: {
+        recipientName: "প্রিয়মানুষ",
+        senderName: "সমীর",
+        letterTitle: "একটু নিরবে, তোমার জন্য",
+        letterBody: `জানি এখন হয়তো সবকিছু একটু ভারী লাগছে, মন খারাপ কিংবা অস্থির লাগছে। আমি চাই না তুমি জোর করে মন ভালো করার চেষ্টা করো, আর নিজের মতো করে একটু সময় নেওয়ার জন্য কোনো সংকোচ করার একদম দরকার নেই।
+
+তোমার জন্য এই শান্ত কোণটি তৈরি করেছি—একটি নিরাপদ জায়গা যেখানে কেউ কোনো কৈফিয়ত চাইবে না, উত্তর চাইবে না বা তোমার মনকে একটুও তাড়া দেবে না।
+
+তোমার প্রতিটা অনুভূতি একদম স্বাভাবিক। তোমার যতটা ইচ্ছা সময় নাও। সমীর ঠিক এখানেই আছে, একটা ছোট আলো জ্বালিয়ে রেখে তোমার পাশে।
+
+ততক্ষণ পর্যন্ত এখানে শান্তিতে একটু জিড়িয়ে নাও। তুমি খুব স্পেশাল, সবসময়।
+
+- সমীর`,
+        companionName: "মোচি",
+        companionDialogues: [
+          "আজ কি একটু পানি খেয়েছো? এক ঢোক খেলেও হবে। 💧",
+          "আমি একদম তোমার পাশে বসে আছি, কোনো তাড়া নেই কিন্তু। ☁️",
+          "তোমার এখন মন যেমন লাগছে, সেটাই একদম স্বাভাবিক।",
+          "যদি রাগ করে রাগ দেখাইতে চাও, দেখাও! আমিও তোমার দলে। 🐾",
+          "আকাশের তারাগুলোও তাড়াহুড়ো করে না, তোমারও কোনো তাড়া নেই। ⭐",
+          "সমীর তোমার কপালে একটা মিষ্টি ছোঁয়া পাঠিয়েছে। 🌸",
+          "আজকের দিনটা কিচ্ছু না করে একদম আলসেমি করে কাটানোর ফুল অধিকার তোমার আছে।",
+          "মেঘলা দিনেও তুমি কেমন করে যেন চারপাশে একটা সুন্দর আলো ছড়িয়ে দাও।",
+          "এই পেঁজা মেঘের ভেতর তোমার জন্য খুব মিষ্টি একটা জড়িয়ে ধরা রেখে দিলাম। 🧸",
+          "তুমি যখনই ওকে বলবে, সমীর এখানেই থাকবে। একদম নিজের মতো সময় নাও। ♡"
+        ],
+        warmthPetalNotes: [
+          "তোমার ছোট ছোট জিনিসগুলো খেয়াল করার ধরনটা খুব সুন্দর।",
+          "তোমার হাসিটা সমীরের পৃথিবীর সবচেয়ে প্রিয় দৃশ্য।",
+          "তুমি যখন একদম চুপচাপ থাকো, তখনও তোমার পাশে থাকাটা খুব শান্তিদায়ক।",
+          "এত ভালো আর সুন্দর একটা মানুষ হওয়ার জন্য তোমাকে থ্যাংক ইউ।",
+          "যতই কঠিন লাগুক, তুমি যেভাবে চেষ্টা করো তা সত্যি দারুণ।",
+          "সাধারণ মুহূর্তগুলোকেও তুমি কেমন সুন্দর মিষ্টি স্মৃতি বানিয়ে ফেলো।",
+          "যা-ই হোক না কেন, সমীর সবসময় খুব যত্ন করে তোমার পাশে থাকবে।"
+        ]
+      },
+      get active() {
+        return this[this.currentLang];
+      }
+    };
+
+    /* ==========================================
+       2. AUDIO SYNTHESIZER (WEB AUDIO API)
+       ========================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.masterGain = null;
+        this.isMuted = false;
+        this.rainNode = null;
+        this.rainGain = null;
+        this.windGain = null;
+        this.padOscs = [];
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+          this.masterGain = this.ctx.createGain();
+          this.masterGain.gain.value = this.isMuted ? 0 : 0.45;
+          this.masterGain.connect(this.ctx.destination);
+          this.startAmbientWind();
+          this.startAmbientPad();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggleMute() {
+        this.init();
+        this.isMuted = !this.isMuted;
+        if (this.masterGain) {
+          const target = this.isMuted ? 0 : 0.45;
+          this.masterGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.1);
+        }
+        return this.isMuted;
+      }
+
+      playButtonClick(freq = 580) {
+        if (!this.ctx || this.isMuted) return;
+        try {
+          // Warm wooden kalimba click sound
+          const carrier = this.ctx.createOscillator();
+          const modulator = this.ctx.createOscillator();
+          const modGain = this.ctx.createGain();
+          const gain = this.ctx.createGain();
+
+          carrier.type = 'sine';
+          modulator.type = 'sine';
+
+          carrier.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          carrier.frequency.exponentialRampToValueAtTime(freq * 0.5, this.ctx.currentTime + 0.09);
+
+          modulator.frequency.value = freq * 2.0;
+          modGain.gain.value = freq * 0.5;
+
+          modulator.connect(modGain);
+          modGain.connect(carrier.frequency);
+
+          gain.gain.setValueAtTime(0, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.18, this.ctx.currentTime + 0.005);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.09);
+
+          carrier.connect(gain);
+          gain.connect(this.masterGain);
+
+          carrier.start();
+          modulator.start();
+          carrier.stop(this.ctx.currentTime + 0.09);
+          modulator.stop(this.ctx.currentTime + 0.09);
+        } catch (e) {
+          console.error("Audio error:", e);
+        }
+      }
+
+      playEnvelopeOpen() {
+        if (!this.ctx || this.isMuted) return;
+        const notes = [392.00, 523.25, 659.25, 783.99]; // G4, C5, E5, G5
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playChime(freq, 1.4), idx * 70);
+        });
+      }
+
+      playHeartbeat() {
+        if (!this.ctx || this.isMuted) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(80, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.2);
+
+          gain.gain.setValueAtTime(0, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.2);
+
+          setTimeout(() => {
+            if (!this.ctx || this.isMuted) return;
+            const osc2 = this.ctx.createOscillator();
+            const gain2 = this.ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(90, this.ctx.currentTime);
+            osc2.frequency.exponentialRampToValueAtTime(45, this.ctx.currentTime + 0.25);
+
+            gain2.gain.setValueAtTime(0, this.ctx.currentTime);
+            gain2.gain.linearRampToValueAtTime(0.35, this.ctx.currentTime + 0.05);
+            gain2.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+
+            osc2.connect(gain2);
+            gain2.connect(this.masterGain);
+            osc2.start();
+            osc2.stop(this.ctx.currentTime + 0.25);
+          }, 200);
+        } catch(e) {}
+      }
+
+      playCompanionPop() {
+        if (!this.ctx || this.isMuted) return;
+        this.playChime(587.33, 0.4);
+        setTimeout(() => this.playChime(880.00, 0.6), 80);
+      }
+
+      playSparkleArpeggio(step = 1) {
+        if (!this.ctx || this.isMuted) return;
+        const base = 523.25 + (step % 5) * 60;
+        const notes = [base, base * 1.25, base * 1.5, base * 2.0];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playChime(freq, 0.8), idx * 60);
+        });
+      }
+
+      playLanternRise(step = 1) {
+        if (!this.ctx || this.isMuted) return;
+        const base = 440.00 + (step % 7) * 40;
+        const notes = [base, base * 1.25, base * 1.5, base * 1.75, base * 2.0];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playChime(freq, 1.5), idx * 80);
+        });
+      }
+
+      playPetalPluck(index = 0) {
+        if (!this.ctx || this.isMuted) return;
+        const scale = [440.00, 493.88, 554.37, 659.25, 739.99, 880.00, 987.77];
+        const freq = scale[index % scale.length];
+        this.playChime(freq, 1.2);
+        setTimeout(() => this.playChime(freq * 1.5, 0.9), 120);
+      }
+
+      playChime(freq = 523.25, duration = 1.2) {
+        if (!this.ctx || this.isMuted) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const osc2 = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc2.type = 'sine';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          osc2.frequency.setValueAtTime(freq * 2.75, this.ctx.currentTime);
+
+          gain.gain.setValueAtTime(0, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.14, this.ctx.currentTime + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+          osc.connect(gain);
+          osc2.connect(gain);
+          gain.connect(this.masterGain);
+
+          osc.start();
+          osc2.start();
+          osc.stop(this.ctx.currentTime + duration);
+          osc2.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.error("Audio error:", e);
+        }
+      }
+
+      setTheme(themeName) {
+        if (!this.ctx) return;
+        try {
+          // Stop existing pad oscillators
+          this.padOscs.forEach(o => {
+            try { o.stop(); } catch(e){}
+          });
+          this.padOscs = [];
+
+          let freqs = [261.63, 392.00, 440.00, 659.25]; // default garden (C maj9)
+          let filterCutoff = 350;
+
+          if (themeName === 'flower') {
+            freqs = [174.61, 261.63, 349.23, 440.00]; // Deep breath warmth (F3 chord)
+            filterCutoff = 280;
+          } else if (themeName === 'letter') {
+            freqs = [261.63, 329.63, 392.00, 523.25]; // Quiet music-box warmth (C maj7)
+            filterCutoff = 450;
+          } else if (themeName === 'companion') {
+            freqs = [196.00, 293.66, 392.00, 493.88]; // Playful Mochi cozy chord (G maj7)
+            filterCutoff = 400;
+          } else if (themeName === 'comfort') {
+            freqs = [207.65, 311.13, 415.30, 523.25]; // Rainy bedroom velvet hum (Ab maj7)
+            filterCutoff = 250;
+          } else if (themeName === 'distraction') {
+            freqs = [293.66, 440.00, 587.33, 739.99]; // Magical firefly D major chord
+            filterCutoff = 500;
+          } else if (themeName === 'warmth') {
+            freqs = [349.23, 440.00, 523.25, 659.25]; // Warm heart F maj7 chord
+            filterCutoff = 420;
+          } else if (themeName === 'zen') {
+            freqs = [130.81, 196.00, 261.63, 329.63]; // Ultra-soft deep sleep C3 chord
+            filterCutoff = 200;
+          }
+
+          freqs.forEach((f, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const filter = this.ctx.createBiquadFilter();
+
+            osc.type = 'sine';
+            osc.frequency.value = f;
+
+            filter.type = 'lowpass';
+            filter.frequency.value = filterCutoff;
+
+            gain.gain.value = 0.025;
+
+            const lfo = this.ctx.createOscillator();
+            const lfoGain = this.ctx.createGain();
+            lfo.frequency.value = 0.08 + i * 0.025;
+            lfoGain.gain.value = 0.015;
+            lfo.connect(lfoGain);
+            lfoGain.connect(gain.gain);
+            lfo.start();
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.masterGain);
+            osc.start();
+            this.padOscs.push(osc);
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      startAmbientPad() {
+        this.setTheme('garden');
+      }
+
+      startAmbientWind() {
+        if (!this.ctx) return;
+        try {
+          // Soft filtered noise generator for ambient wind
+          const bufferSize = this.ctx.sampleRate * 2;
+          const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
+          }
+
+          const whiteNoise = this.ctx.createBufferSource();
+          whiteNoise.buffer = noiseBuffer;
+          whiteNoise.loop = true;
+
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = 220;
+
+          this.windGain = this.ctx.createGain();
+          this.windGain.gain.value = 0.05;
+
+          whiteNoise.connect(filter);
+          filter.connect(this.windGain);
+          this.windGain.connect(this.masterGain);
+          whiteNoise.start();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      setRain(enable) {
+        if (!this.ctx) return;
+        try {
+          if (enable && !this.rainNode) {
+            const bufferSize = this.ctx.sampleRate * 2;
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+              data[i] = Math.random() * 2 - 1;
+            }
+
+            this.rainNode = this.ctx.createBufferSource();
+            this.rainNode.buffer = buffer;
+            this.rainNode.loop = true;
+
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 600;
+
+            this.rainGain = this.ctx.createGain();
+            this.rainGain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+            this.rainGain.gain.linearRampToValueAtTime(0.08, this.ctx.currentTime + 1.0);
+
+            this.rainNode.connect(filter);
+            filter.connect(this.rainGain);
+            this.rainGain.connect(this.masterGain);
+            this.rainNode.start();
+          } else if (!enable && this.rainNode) {
+            this.rainGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
+            setTimeout(() => {
+              if (this.rainNode) {
+                this.rainNode.stop();
+                this.rainNode = null;
+              }
+            }, 600);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    const soundEngine = new SoundEngine();
+
+    // Haptic feedback helper
+    function triggerHaptic(duration = 15) {
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate(duration); } catch(e) {}
+      }
+    }
+
+    /* ==========================================
+       3. CANVAS PARTICLE SYSTEM (STARS & FIREFLIES)
+       ========================================== */
+    class NightGardenCanvas {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.stars = [];
+        this.fireflies = [];
+        this.interactiveFireflies = [];
+        this.width = 0;
+        this.height = 0;
+        this.touchPos = { x: -1000, y: -1000 };
+
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+
+        this.canvas.addEventListener('pointermove', (e) => {
+          const rect = this.canvas.getBoundingClientRect();
+          this.touchPos.x = e.clientX - rect.left;
+          this.touchPos.y = e.clientY - rect.top;
+        });
+
+        this.lanterns = [];
+        this.initElements();
+        this.animate();
+      }
+
+      spawnLantern(x, y) {
+        this.lanterns.push({
+          x: x || Math.random() * (this.width - 60) + 30,
+          y: y || this.height + 20,
+          vy: -(Math.random() * 0.8 + 0.6),
+          vx: (Math.random() - 0.5) * 0.3,
+          width: 16,
+          height: 22,
+          alpha: 1,
+          pulse: Math.random() * Math.PI
+        });
+      }
+
+      resize() {
+        const frame = document.getElementById('appFrame');
+        this.width = frame.clientWidth;
+        this.height = frame.clientHeight;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+      }
+
+      initElements() {
+        // Init 60 stars
+        this.stars = [];
+        for (let i = 0; i < 60; i++) {
+          this.stars.push({
+            x: Math.random() * this.width,
+            y: Math.random() * this.height,
+            radius: Math.random() * 1.5 + 0.5,
+            alpha: Math.random(),
+            speed: Math.random() * 0.015 + 0.005
+          });
+        }
+
+        // Init 18 background fireflies
+        this.fireflies = [];
+        for (let i = 0; i < 18; i++) {
+          this.fireflies.push({
+            x: Math.random() * this.width,
+            y: Math.random() * this.height,
+            radius: Math.random() * 2.5 + 1.5,
+            angle: Math.random() * Math.PI * 2,
+            speed: Math.random() * 0.5 + 0.2,
+            pulse: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      spawnInteractiveFireflies(count = 5) {
+        this.interactiveFireflies = [];
+        for (let i = 0; i < count; i++) {
+          this.interactiveFireflies.push({
+            x: Math.random() * (this.width - 60) + 30,
+            y: Math.random() * (this.height - 200) + 100,
+            radius: Math.random() * 4 + 3,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: (Math.random() - 0.5) * 1.2,
+            hue: 45 + Math.random() * 20
+          });
+        }
+      }
+
+      animate() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        // Draw Twinkling Stars
+        for (let star of this.stars) {
+          star.alpha += star.speed;
+          if (star.alpha > 1 || star.alpha < 0.1) star.speed = -star.speed;
+
+          this.ctx.beginPath();
+          this.ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+          this.ctx.fillStyle = `rgba(255, 247, 237, ${Math.abs(star.alpha)})`;
+          this.ctx.fill();
+        }
+
+        // Draw Ambient Fireflies
+        for (let ff of this.fireflies) {
+          ff.angle += (Math.random() - 0.5) * 0.1;
+          ff.x += Math.cos(ff.angle) * ff.speed;
+          ff.y += Math.sin(ff.angle) * ff.speed;
+
+          // Wrap edges
+          if (ff.x < -10) ff.x = this.width + 10;
+          if (ff.x > this.width + 10) ff.x = -10;
+          if (ff.y < -10) ff.y = this.height + 10;
+          if (ff.y > this.height + 10) ff.y = -10;
+
+          ff.pulse += 0.03;
+          const alpha = (Math.sin(ff.pulse) + 1) / 2 * 0.7 + 0.2;
+
+          this.ctx.beginPath();
+          this.ctx.arc(ff.x, ff.y, ff.radius, 0, Math.PI * 2);
+          this.ctx.fillStyle = `rgba(253, 230, 138, ${alpha})`;
+          this.ctx.shadowBlur = 10;
+          this.ctx.shadowColor = '#fde68a';
+          this.ctx.fill();
+          this.ctx.shadowBlur = 0;
+        }
+
+        // Draw Interactive Fireflies (Sub-scene Distraction)
+        for (let iff of this.interactiveFireflies) {
+          iff.x += iff.vx;
+          iff.y += iff.vy;
+
+          if (iff.x < 30 || iff.x > this.width - 30) iff.vx *= -1;
+          if (iff.y < 100 || iff.y > this.height - 150) iff.vy *= -1;
+
+          this.ctx.beginPath();
+          this.ctx.arc(iff.x, iff.y, iff.radius, 0, Math.PI * 2);
+          this.ctx.fillStyle = `hsla(${iff.hue}, 90%, 75%, 0.9)`;
+          this.ctx.shadowBlur = 15;
+          this.ctx.shadowColor = `hsl(${iff.hue}, 90%, 70%)`;
+          this.ctx.fill();
+          this.ctx.shadowBlur = 0;
+        }
+
+        // Draw Wish Lanterns
+        if (this.lanterns) {
+          for (let i = this.lanterns.length - 1; i >= 0; i--) {
+            const l = this.lanterns[i];
+            l.y += l.vy;
+            l.x += l.vx;
+            l.pulse += 0.05;
+
+            const glow = (Math.sin(l.pulse) + 1) / 2 * 0.3 + 0.7;
+
+            this.ctx.beginPath();
+            this.ctx.roundRect(l.x - l.width / 2, l.y - l.height / 2, l.width, l.height, 4);
+            this.ctx.fillStyle = `rgba(253, 230, 138, ${l.alpha * glow})`;
+            this.ctx.shadowBlur = 20;
+            this.ctx.shadowColor = '#fde68a';
+            this.ctx.fill();
+            this.ctx.shadowBlur = 0;
+
+            if (l.y < -30) {
+              this.lanterns.splice(i, 1);
+            }
+          }
+        }
+
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+
+    /* ==========================================
+       4. BEDROOM RAIN CANVAS (SUB-SCENE 8A)
+       ========================================== */
+    class RainCanvas {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.drops = [];
+        this.resize();
+        this.init();
+        this.animate();
+      }
+
+      resize() {
+        if (!this.canvas) return;
+        this.width = this.canvas.parentElement.clientWidth;
+        this.height = this.canvas.parentElement.clientHeight;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+      }
+
+      init() {
+        this.drops = [];
+        for (let i = 0; i < 40; i++) {
+          this.drops.push({
+            x: Math.random() * this.width,
+            y: Math.random() * this.height,
+            length: Math.random() * 15 + 10,
+            speed: Math.random() * 4 + 3,
+            opacity: Math.random() * 0.4 + 0.2
+          });
+        }
+      }
+
+      animate() {
+        if (!this.ctx) return;
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        this.ctx.strokeStyle = 'rgba(179, 167, 217, 0.4)';
+        this.ctx.lineWidth = 1.2;
+
+        for (let d of this.drops) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(d.x, d.y);
+          this.ctx.lineTo(d.x - 2, d.y + d.length);
+          this.ctx.stroke();
+
+          d.y += d.speed;
+          d.x -= 0.5;
+
+          if (d.y > this.height) {
+            d.y = -20;
+            d.x = Math.random() * this.width;
+          }
+        }
+
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+
+    /* ==========================================
+       5. STATE MACHINE & UI INTERACTION CONTROLLER
+       ========================================== */
+    class AppStateMachine {
+      constructor() {
+        this.currentScene = 'sceneLoading';
+        this.gardenCanvas = new NightGardenCanvas('nightCanvas');
+        this.rainCanvas = null;
+        this.fireflyCatches = 0;
+        this.openedPetals = 0;
+
+        this.initEventListeners();
+        this.startLoadingFlow();
+      }
+
+      showScene(sceneId) {
+        const scenes = document.querySelectorAll('.scene-layer');
+        scenes.forEach(s => s.classList.remove('active'));
+
+        const target = document.getElementById(sceneId);
+        if (target) {
+          target.classList.add('active');
+          this.currentScene = sceneId;
+        }
+
+        // Switch scene-specific cozy background music themes
+        if (sceneId === 'sceneGarden' || sceneId === 'sceneIntro') {
+          soundEngine.setTheme('garden');
+          soundEngine.setRain(false);
+        } else if (sceneId === 'sceneFlower') {
+          soundEngine.setTheme('flower');
+          soundEngine.setRain(false);
+        } else if (sceneId === 'sceneLetter') {
+          soundEngine.setTheme('letter');
+          soundEngine.setRain(false);
+        } else if (sceneId === 'sceneCompanion') {
+          soundEngine.setTheme('companion');
+          soundEngine.setRain(false);
+        } else if (sceneId === 'sceneSubComfort') {
+          soundEngine.setTheme('comfort');
+          soundEngine.setRain(true);
+        } else if (sceneId === 'sceneSubDistraction') {
+          soundEngine.setTheme('distraction');
+          soundEngine.setRain(false);
+        } else if (sceneId === 'sceneSubWarmth') {
+          soundEngine.setTheme('warmth');
+          soundEngine.setRain(false);
+        } else if (sceneId === 'sceneSubLanterns') {
+          soundEngine.setTheme('distraction');
+          soundEngine.setRain(false);
+        } else if (sceneId === 'sceneFinal') {
+          soundEngine.setTheme('zen');
+          soundEngine.setRain(false);
+        }
+      }
+
+      startLoadingFlow() {
+        setTimeout(() => {
+          this.showScene('sceneIntro');
+          this.animateIntroLines();
+        }, 1500);
+      }
+
+      animateIntroLines() {
+        setTimeout(() => document.getElementById('introLine1').classList.add('visible'), 300);
+        setTimeout(() => document.getElementById('introLine2').classList.add('visible'), 1400);
+        setTimeout(() => document.getElementById('introBtn').classList.add('visible'), 2500);
+      }
+
+      initEventListeners() {
+        // Automatically start & unlock background music on first tap anywhere
+        const unlockAudio = () => {
+          soundEngine.init();
+          document.removeEventListener('pointerdown', unlockAudio);
+          document.removeEventListener('touchstart', unlockAudio);
+          document.removeEventListener('click', unlockAudio);
+        };
+        document.addEventListener('pointerdown', unlockAudio);
+        document.addEventListener('touchstart', unlockAudio);
+        document.addEventListener('click', unlockAudio);
+
+        // Universal button & control click sound effect
+        document.addEventListener('pointerdown', (e) => {
+          const target = e.target.closest('button, .primary-btn, .choice-btn, .icon-btn, .envelope-wrapper, .companion-svg-container, .bedroom-lamp, .petal-card, .zen-exit-pill');
+          if (target) {
+            soundEngine.init();
+            soundEngine.playButtonClick(580);
+            triggerHaptic(12);
+          }
+        });
+
+        // Sound toggle button
+        document.getElementById('soundToggle').addEventListener('click', () => {
+          const isMuted = soundEngine.toggleMute();
+          const icon = document.getElementById('soundIcon');
+          if (isMuted) {
+            icon.innerHTML = `<line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v6a3 3 0 0 0 5.12 2.12M15 9.34V4a2 2 0 0 0-3.28-1.55l-4.5 3.55H3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h4.5l2.45 1.93"></path>`;
+          } else {
+            icon.innerHTML = `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>`;
+          }
+          triggerHaptic(20);
+        });
+
+        // Initialize AudioContext on any first click inside app
+        document.getElementById('appFrame').addEventListener('pointerdown', () => {
+          soundEngine.init();
+        }, { once: true });
+
+        // Scene Intro -> Precheck
+        document.getElementById('introBtn').addEventListener('click', () => {
+          soundEngine.playChime(440, 1.0);
+          triggerHaptic(15);
+          this.showScene('scenePrecheck');
+        });
+
+        // Scene Precheck choices
+        const handlePrecheck = (text) => {
+          soundEngine.playChime(523.25, 0.8);
+          triggerHaptic(15);
+          document.getElementById('precheckChoices').style.display = 'none';
+          const resp = document.getElementById('precheckResponse');
+          resp.style.display = 'flex';
+          document.getElementById('precheckText').innerText = text;
+        };
+
+        document.getElementById('btnMad').addEventListener('click', () => {
+          handlePrecheck("Fair. You can be. Come in anyway. You don't have to pretend.");
+        });
+        document.getElementById('btnLessMad').addEventListener('click', () => {
+          handlePrecheck("Progress. No pressure though. Take all the time you need.");
+        });
+
+        // Precheck -> Garden
+        document.getElementById('btnEnterGarden').addEventListener('click', () => {
+          soundEngine.playChime(587.33, 1.2);
+          triggerHaptic(20);
+          this.showScene('sceneGarden');
+          this.animateGardenSequence();
+        });
+
+        // Garden -> Breathing Flower
+        document.getElementById('btnGoToFlower').addEventListener('click', () => {
+          soundEngine.playChime(659.25, 1.0);
+          triggerHaptic(15);
+          this.showScene('sceneFlower');
+        });
+
+        // Breathing Flower long-press logic
+        this.setupBreathingFlower();
+
+        // Flower complete -> Letter Note
+        document.getElementById('btnShowLetter').addEventListener('click', () => {
+          soundEngine.playChime(523.25, 1.2);
+          triggerHaptic(15);
+          this.showScene('sceneLetter');
+        });
+
+        // Language Toggle button
+        document.getElementById('langToggle').addEventListener('click', () => {
+          CONFIG.currentLang = CONFIG.currentLang === 'en' ? 'bn' : 'en';
+          document.getElementById('langToggle').innerText = CONFIG.currentLang === 'en' ? 'EN | বাংলা' : 'বাংলা | EN';
+          soundEngine.playChime(660, 0.6);
+          triggerHaptic(15);
+          this.updateTextsForLanguage();
+        });
+
+        // Envelope click -> Open Modal
+        document.getElementById('envelopeBtn').addEventListener('click', () => {
+          soundEngine.playEnvelopeOpen();
+          triggerHaptic(25);
+          document.getElementById('letterTitleText').innerText = CONFIG.active.letterTitle;
+          document.getElementById('letterBodyText').innerText = CONFIG.active.letterBody;
+          document.getElementById('letterModal').classList.add('open');
+        });
+
+        // Close Letter Modal -> Companion
+        document.getElementById('btnCloseLetter').addEventListener('click', () => {
+          soundEngine.playChime(440, 0.8);
+          triggerHaptic(15);
+          document.getElementById('letterModal').classList.remove('open');
+          setTimeout(() => {
+            this.showScene('sceneCompanion');
+          }, 300);
+        });
+
+        // Companion dialogue cycling on tap
+        let diagIndex = 0;
+        document.getElementById('companionSvgBtn').addEventListener('click', () => {
+          soundEngine.playCompanionPop();
+          triggerHaptic(20);
+
+          // Wiggle SVG animation
+          const container = document.getElementById('companionSvgBtn');
+          container.style.transform = 'scale(1.1) rotate(5deg)';
+          setTimeout(() => container.style.transform = 'scale(1) rotate(0deg)', 250);
+
+          // Cycle text
+          const dialogues = CONFIG.active.companionDialogues;
+          document.getElementById('companionBubble').innerText = dialogues[diagIndex];
+          diagIndex = (diagIndex + 1) % dialogues.length;
+        });
+
+        // Send Hug button
+        document.getElementById('btnSendHug').addEventListener('click', () => {
+          soundEngine.playHeartbeat();
+          triggerHaptic(40);
+
+          const container = document.getElementById('companionSvgBtn');
+          container.style.transform = 'scale(1.2) rotate(-5deg)';
+          setTimeout(() => container.style.transform = 'scale(1) rotate(0deg)', 400);
+
+          const hugText = CONFIG.currentLang === 'en'
+            ? "Sending you the warmest, softest hug right now... Take a deep breath. 🧸♡"
+            : "তোমাকে একদম ওম মোড়ানো মিষ্টি একটা জড়িয়ে ধরা পাঠাচ্ছি... গভীর একটা শ্বাস নাও। 🧸♡";
+          document.getElementById('companionBubble').innerText = hugText;
+        });
+
+        // Companion -> Mood choices
+        document.getElementById('btnGoToMoods').addEventListener('click', () => {
+          soundEngine.playChime(523.25, 1.0);
+          triggerHaptic(15);
+          this.showScene('sceneMoods');
+        });
+
+        // Mood choices listeners
+        document.getElementById('btnMoodComfort').addEventListener('click', () => {
+          soundEngine.playChime(440, 1.0);
+          triggerHaptic(15);
+          this.showScene('sceneSubComfort');
+          if (!this.rainCanvas) {
+            this.rainCanvas = new RainCanvas('rainCanvas');
+          }
+        });
+
+        document.getElementById('btnMoodDistraction').addEventListener('click', () => {
+          soundEngine.playChime(659.25, 1.0);
+          triggerHaptic(15);
+          this.showScene('sceneSubDistraction');
+          this.gardenCanvas.spawnInteractiveFireflies(6);
+        });
+
+        document.getElementById('btnMoodWarmth').addEventListener('click', () => {
+          soundEngine.playChime(523.25, 1.0);
+          triggerHaptic(15);
+          this.showScene('sceneSubWarmth');
+          this.renderWarmthPetals();
+        });
+
+        document.getElementById('btnMoodLanterns').addEventListener('click', () => {
+          soundEngine.playChime(659.25, 1.0);
+          triggerHaptic(15);
+          this.showScene('sceneSubLanterns');
+        });
+
+        // Lamp toggle in Comfort scene
+        document.getElementById('bedroomLampBtn').addEventListener('click', () => {
+          soundEngine.playChime(880, 0.5);
+          triggerHaptic(15);
+          document.getElementById('lampGlow').classList.toggle('off');
+        });
+
+        // Wish Lantern release handler on sceneSubLanterns
+        document.getElementById('sceneSubLanterns').addEventListener('pointerdown', (e) => {
+          if (e.target.closest('button')) return;
+          const rect = this.gardenCanvas.canvas.getBoundingClientRect();
+          const px = e.clientX - rect.left;
+          const py = e.clientY - rect.top;
+
+          this.gardenCanvas.spawnLantern(px, py);
+          if (!this.lanternCount) this.lanternCount = 0;
+          this.lanternCount++;
+          soundEngine.playLanternRise(this.lanternCount);
+          triggerHaptic(25);
+
+          document.getElementById('lanternScoreBadge').innerText = `Wish Lanterns Floating: ${this.lanternCount}`;
+          if (this.lanternCount >= 5) {
+            const msg = CONFIG.currentLang === 'en'
+              ? "The night sky is filled with warm glowing wishes for you."
+              : "আকাশটা এখন তোমার জন্য সুন্দর আলো আর প্রার্থনায় ভরে গেছে।";
+            document.getElementById('lanternMsg').innerText = msg;
+          }
+        });
+
+        // Firefly catch handler on sceneSubDistraction
+        document.getElementById('sceneSubDistraction').addEventListener('pointerdown', (e) => {
+          if (e.target.closest('button')) return;
+          const rect = this.gardenCanvas.canvas.getBoundingClientRect();
+          const px = e.clientX - rect.left;
+          const py = e.clientY - rect.top;
+
+          const list = this.gardenCanvas.interactiveFireflies;
+          let hit = false;
+          for (let i = list.length - 1; i >= 0; i--) {
+            const f = list[i];
+            const dist = Math.hypot(f.x - px, f.y - py);
+            if (dist < 55) { // generous touch radius for easy catching
+              list.splice(i, 1);
+              this.fireflyCatches++;
+              soundEngine.playSparkleArpeggio(this.fireflyCatches);
+              triggerHaptic(30);
+              hit = true;
+
+              document.getElementById('fireflyScoreBadge').innerText = `Sparkles Caught: ${this.fireflyCatches}`;
+              if (this.fireflyCatches >= 10) {
+                document.getElementById('fireflyMsg').innerText = "So many sparkles! You brought the light back. ✨";
+              } else if (this.fireflyCatches >= 5) {
+                document.getElementById('fireflyMsg').innerText = "Look at them shine! 🌟";
+              }
+
+              setTimeout(() => {
+                this.gardenCanvas.interactiveFireflies.push({
+                  x: Math.random() * (this.gardenCanvas.width - 60) + 30,
+                  y: Math.random() * (this.gardenCanvas.height - 200) + 100,
+                  radius: Math.random() * 5 + 4,
+                  vx: (Math.random() - 0.5) * 1.5,
+                  vy: (Math.random() - 0.5) * 1.5,
+                  hue: 45 + Math.random() * 20
+                });
+              }, 800);
+              break;
+            }
+          }
+          if (!hit) {
+            soundEngine.playChime(600, 0.3);
+          }
+        });
+
+        // Back from sub-scenes
+        document.getElementById('btnBackFromComfort').addEventListener('click', () => {
+          this.showScene('sceneMoods');
+        });
+        document.getElementById('btnBackFromDistraction').addEventListener('click', () => {
+          this.showScene('sceneMoods');
+        });
+        document.getElementById('btnBackFromWarmth').addEventListener('click', () => {
+          this.showScene('sceneMoods');
+        });
+        document.getElementById('btnBackFromLanterns').addEventListener('click', () => {
+          this.showScene('sceneMoods');
+        });
+
+        // Warmth scene -> Final Scene
+        document.getElementById('btnGoToFinal').addEventListener('click', () => {
+          soundEngine.playChime(523.25, 1.5);
+          triggerHaptic(20);
+          this.showScene('sceneFinal');
+        });
+
+        // Final scene -> Zen Mode
+        document.getElementById('btnZenMode').addEventListener('click', () => {
+          soundEngine.playChime(659.25, 2.0);
+          triggerHaptic(20);
+          document.querySelectorAll('.scene-layer').forEach(s => s.classList.remove('active'));
+          document.querySelector('.top-bar').style.display = 'none';
+
+          const zenPill = document.getElementById('zenExitBtn');
+          zenPill.classList.add('visible');
+        });
+
+        // Zen Exit button click
+        document.getElementById('zenExitBtn').addEventListener('click', () => {
+          document.querySelector('.top-bar').style.display = 'flex';
+          document.getElementById('zenExitBtn').classList.remove('visible');
+          this.showScene('sceneFinal');
+        });
+
+        // Restart app
+        document.getElementById('btnRestartApp').addEventListener('click', () => {
+          location.reload();
+        });
+      }
+
+      animateGardenSequence() {
+        setTimeout(() => document.getElementById('gardenLine1').classList.add('visible'), 400);
+        setTimeout(() => document.getElementById('gardenLine2').classList.add('visible'), 1600);
+        setTimeout(() => document.getElementById('gardenLine3').classList.add('visible'), 2800);
+        setTimeout(() => document.getElementById('btnGoToFlower').classList.add('visible'), 4000);
+      }
+
+      setupBreathingFlower() {
+        const flowerContainer = document.getElementById('flowerInteractive');
+        const svgFlower = document.getElementById('svgFlower');
+        const petalsG = document.getElementById('flowerPetals');
+        const circleRing = document.getElementById('breathRing');
+        const instruction = document.getElementById('breathInstruction');
+
+        let holdTimer = null;
+        let holdStartTime = 0;
+        const totalHoldDuration = 6000; // 6 seconds total breath cycle
+
+        const startHold = (e) => {
+          e.preventDefault();
+          holdStartTime = Date.now();
+          instruction.innerText = "breathe in softly...";
+          instruction.style.color = "var(--dusty-rose)";
+          triggerHaptic(20);
+
+          holdTimer = setInterval(() => {
+            const elapsed = Date.now() - holdStartTime;
+            const progress = Math.min(elapsed / totalHoldDuration, 1);
+
+            // Ring progress
+            const offset = 628 * (1 - progress);
+            circleRing.style.strokeDashoffset = offset;
+
+            // Flower expansion animation
+            const scaleVal = 1 + progress * 0.4;
+            const rotateVal = progress * 45;
+            petalsG.setAttribute('transform', `scale(${scaleVal}) rotate(${rotateVal})`);
+
+            // Audio pitch swell
+            if (elapsed % 300 < 50) {
+              soundEngine.playChime(300 + progress * 400, 0.4);
+            }
+
+            if (progress >= 0.5 && progress < 0.95) {
+              instruction.innerText = "and release gently...";
+              instruction.style.color = "var(--soft-lavender)";
+            }
+
+            if (progress >= 1) {
+              endHold(true);
+            }
+          }, 50);
+        };
+
+        const endHold = (completed = false) => {
+          if (holdTimer) clearInterval(holdTimer);
+          holdTimer = null;
+
+          if (completed) {
+            soundEngine.playChime(783.99, 2.0);
+            triggerHaptic(40);
+            instruction.style.opacity = '0';
+            flowerContainer.style.pointerEvents = 'none';
+
+            document.getElementById('flowerCompleteBox').style.display = 'flex';
+          } else {
+            // Reset flower position if released early
+            circleRing.style.strokeDashoffset = '628';
+            petalsG.setAttribute('transform', `scale(1) rotate(0)`);
+            instruction.innerText = "hold to breathe together";
+            instruction.style.color = "var(--moon-gold)";
+          }
+        };
+
+        flowerContainer.addEventListener('pointerdown', startHold);
+        flowerContainer.addEventListener('pointerup', () => endHold(false));
+        flowerContainer.addEventListener('pointercancel', () => endHold(false));
+        flowerContainer.addEventListener('mouseleave', () => endHold(false));
+      }
+
+      updateTextsForLanguage() {
+        // Update Letter Modal text if open or ready
+        document.getElementById('letterTitleText').innerText = CONFIG.active.letterTitle;
+        document.getElementById('letterBodyText').innerText = CONFIG.active.letterBody;
+
+        // Update Companion dialogue bubble
+        document.getElementById('companionBubble').innerText = CONFIG.active.companionDialogues[0];
+
+        // Update Petals if on Warmth sub-scene
+        if (this.currentScene === 'sceneSubWarmth') {
+          this.renderWarmthPetals();
+        }
+      }
+
+      renderWarmthPetals() {
+        const grid = document.getElementById('petalsContainer');
+        grid.innerHTML = '';
+        this.openedPetals = 0;
+
+        const notes = CONFIG.active.warmthPetalNotes;
+        notes.forEach((noteText, idx) => {
+          const petal = document.createElement('div');
+          petal.className = 'petal-card';
+          petal.innerHTML = `<span>🌸</span>`;
+          petal.addEventListener('click', () => {
+            if (!petal.classList.contains('opened')) {
+              petal.classList.add('opened');
+              this.openedPetals++;
+              soundEngine.playPetalPluck(idx);
+              triggerHaptic(15);
+            }
+            document.getElementById('petalNoteDisplay').innerText = noteText;
+          });
+          grid.appendChild(petal);
+        });
+      }
+    }
+
+    // Initialize application when DOM is ready
+    window.addEventListener('DOMContentLoaded', () => {
+      window.app = new AppStateMachine();
+    });
+  </script>
+</body>
+</html>
